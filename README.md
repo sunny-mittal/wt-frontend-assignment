@@ -66,19 +66,6 @@ You may install other libraries or tools if you believe they improve your soluti
 
 ---
 
-## 🧪 Evaluation Criteria
-
-| Area | Weight | Description |
-|------|--------|-------------|
-| Correctness | 40% | Meets functional requirements |
-| Code Quality | 30% | Clean, maintainable, and modular |
-| TypeScript | 20% | Strong typing and safe data handling |
-| Error/State Handling | 10% | Clear and consistent UX for all states |
-
-**Timebox:** ~2 hours of focused work.
-
----
-
 # 🧰 API Documentation
 
 You’ll use the **Mock Members API**, a stateless backend for creating, reading, updating, and deleting members.

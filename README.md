@@ -8,10 +8,7 @@ This task focuses on functionality, architecture, and reasoning — **we will no
 
 To start, please fork this repository. Any work you do should be committed to that repo. Once you're done, share the link to your repo with the finalized code with us. Please make sure that we have sufficient permissions to view the repository.
 
-The project is already set up with React, TypeScript, React Router, Material UI, styled-components and Vite.  
-You may install other libraries or tools if you believe they improve your solution.
-
-We expect you to spend around 2-3 hours on this task. Please record your screen while you work on the assignment. Voiceover explaining your thought process is welcome, but not required.
+We expect you to spend a maximum of 3 hours on this task. Please record your screen while you work on the assignment. Voiceover explaining your thought process is welcome, but not required.
 ---
 
 ## 🎯 Task Overview
@@ -56,13 +53,10 @@ You may install other libraries or tools if you believe they improve your soluti
 - Fetch a single member by ID.
 - Allow editing all fields and updating the profile photo.
 - Allow deleting a member with confirmation.
-- Show loading, empty, and error states where appropriate.
 
 ### 3) General
 - Include the provided API key in every request using the `X-Api-Key` header.
-- Use TypeScript effectively across the project.
-- You may choose any state management or data fetching approach.
-- Structure your code cleanly and keep it maintainable.
+- Use TypeScript across the project.
 
 ---
 
@@ -136,33 +130,9 @@ Each key corresponds to an isolated data namespace.
 
 ## Endpoints
 
-### 1) Health Check
-**GET** `/health`  
-_No authentication required._
-
-**Response:**
-```json
-{ "ok": true }
-```
-
 ---
 
-### 2) Namespace Stats
-**GET** `/me`  
-_Authentication required._
-
-**Response:**
-```json
-{
-  "members": 5,
-  "photos": 2,
-  "initialized": true
-}
-```
-
----
-
-### 3) List Members (Paginated)
+### 1) List Members (Paginated)
 **GET** `/members?page=1&limit=10`  
 Returns a paginated list of members. On the first request, the namespace initializes with 5 default members.
 
@@ -199,7 +169,7 @@ Returns a paginated list of members. On the first request, the namespace initial
 
 ---
 
-### 4) Get Single Member
+### 2) Get Single Member
 **GET** `/members/:id`  
 _Authentication required._
 
@@ -223,7 +193,7 @@ _Authentication required._
 
 ---
 
-### 5) Create Member
+### 3) Create Member
 **POST** `/members`  
 `Content-Type: application/json`  
 _Authentication required._
@@ -260,7 +230,7 @@ _Authentication required._
 
 ---
 
-### 6) Update Member
+### 4) Update Member
 **PATCH** `/members/:id`  
 `Content-Type: application/json`
 
@@ -295,7 +265,7 @@ All fields are optional; at least one must be provided.
 
 ---
 
-### 7) Delete Member
+### 5) Delete Member
 **DELETE** `/members/:id`
 
 **Response:**
@@ -308,7 +278,7 @@ All fields are optional; at least one must be provided.
 
 ---
 
-### 8) Upload Member Photo
+### 6) Upload Member Photo
 **PUT** `/members/:id/photo`  
 `Content-Type: multipart/form-data`
 

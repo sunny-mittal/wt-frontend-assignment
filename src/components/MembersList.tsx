@@ -13,13 +13,17 @@ import {
   Typography,
   Button,
   Chip,
+  capitalize,
+  Pagination,
 } from "@mui/material"
 import { getFullName, getInitials } from "../utils/string"
 import { format } from "date-fns"
+import { useNavigate } from "react-router-dom"
 
 export function MembersList() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+  const navigate = useNavigate()
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["members", page, limit],
@@ -53,7 +57,15 @@ export function MembersList() {
               dateOfBirth.setDate(dateOfBirth.getDate() + 1)
               const isActive = member.status === "ACTIVE"
               return (
-                <TableRow key={member.id}>
+                <TableRow
+                  key={member.id}
+                  component="a"
+                  sx={{
+                    textDecoration: "none",
+                    "&:hover": { backgroundColor: "#f5f5f5" },
+                  }}
+                  href={`/members/${member.id}`}
+                >
                   <TableCell>
                     <Avatar
                       src={member.photoUrl ?? undefined}
@@ -64,7 +76,7 @@ export function MembersList() {
                   </TableCell>
                   <TableCell>{getFullName(member)}</TableCell>
                   <TableCell>{format(dateOfBirth, "MMM dd, yyyy")}</TableCell>
-                  <TableCell>{member.sex}</TableCell>
+                  <TableCell>{capitalize(member.sex)}</TableCell>
                   <TableCell>
                     <Chip
                       label={isActive ? "Active" : "Paused"}
@@ -78,6 +90,14 @@ export function MembersList() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ mt: 1, justifyContent: "center", display: "flex" }}>
+        <Pagination
+          count={data?.totalPages ?? 1}
+          color="primary"
+          page={data?.page ?? 1}
+          onChange={(_e, page) => setPage(page)}
+        />
+      </Box>
     </Box>
   )
 }

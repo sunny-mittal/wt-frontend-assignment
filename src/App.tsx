@@ -28,6 +28,8 @@ function App() {
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
+              <Route path="/members/new" element={null} />
+              <Route path="/members/:id" element={null} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

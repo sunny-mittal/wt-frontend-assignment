@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { ThemeProvider, createTheme } from "@mui/material/styles"
 import CssBaseline from "@mui/material/CssBaseline"
-import { Home } from "./pages/Home"
 import { MainLayout } from "./components/MainLayout"
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
+import { Home } from "./pages/Home"
+import { CreateMember } from "./pages/CreateMember"
 
 const client = new QueryClient()
 
@@ -28,7 +29,7 @@ function App() {
           <Routes>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/members/new" element={null} />
+              <Route path="/members/new" element={<CreateMember />} />
               <Route path="/members/:id" element={null} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

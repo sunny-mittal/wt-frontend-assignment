@@ -24,5 +24,5 @@ export function MemberDetails() {
     )
   }
 
-  return <MemberForm isEdit initial={member} />
+  return <MemberForm initial={member} />
 }

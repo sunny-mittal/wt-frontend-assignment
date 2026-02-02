@@ -40,7 +40,7 @@ export const ApiClient = {
   },
   async updateMember(id: string, data: UpdateMemberDTO): Promise<Member> {
     const response = await fetch(`${API_URL}/members/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers,
       body: JSON.stringify(data),
     })

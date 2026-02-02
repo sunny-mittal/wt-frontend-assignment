@@ -13,15 +13,16 @@ import {
 } from "../api/types"
 import { useForm, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
+import { useMutation } from "@tanstack/react-query"
+import { ApiClient } from "../api/client"
 
 type Props = {
   initial?: Member
-  isEdit?: boolean
 }
 
-export function MemberForm({ initial, isEdit }: Props) {
+export function MemberForm({ initial }: Props) {
   const navigate = useNavigate()
-  const { control } = useForm<CreateMemberDTO | UpdateMemberDTO>({
+  const { control, handleSubmit } = useForm<CreateMemberDTO | UpdateMemberDTO>({
     defaultValues: {
       firstName: initial?.firstName ?? "",
       lastName: initial?.lastName ?? "",
@@ -29,6 +30,30 @@ export function MemberForm({ initial, isEdit }: Props) {
       sex: initial?.sex ?? "male",
       status: initial?.status ?? "ACTIVE",
     },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn(data: { id: string; member: UpdateMemberDTO }) {
+      return ApiClient.updateMember(data.id, data.member)
+    },
+    onSuccess() {},
+    onError() {},
+  })
+
+  const createMutation = useMutation({
+    mutationFn(data: CreateMemberDTO) {
+      return ApiClient.createMember(data)
+    },
+    onSuccess() {},
+    onError() {},
+  })
+
+  const apiFunction = handleSubmit((values) => {
+    if (initial) {
+      return updateMutation.mutate({ id: initial.id, member: values })
+    }
+
+    return createMutation.mutate(values as CreateMemberDTO)
   })
 
   return (
@@ -43,12 +68,12 @@ export function MemberForm({ initial, isEdit }: Props) {
     >
       <Box display="flex" justifyContent="space-between" minWidth={640}>
         <Typography variant="h4" color="primary" sx={{ mb: 2 }}>
-          {isEdit ? "Update" : "Create"} Member
+          {initial ? "Update" : "Create"} Member
         </Typography>
         <Button onClick={() => navigate("/")}>Back to List</Button>
       </Box>
 
-      <Box component="form" minWidth={640}>
+      <Box onSubmit={apiFunction} component="form" minWidth={640}>
         <Stack direction="column" spacing={3}>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <Controller
@@ -99,6 +124,16 @@ export function MemberForm({ initial, isEdit }: Props) {
             }}
           />
         </Stack>
+        <Box sx={{ mt: 2 }} display="flex" justifyContent="space-between">
+          {!!initial && (
+            <Button variant="contained" color="error">
+              Delete Member
+            </Button>
+          )}
+          <Button type="submit" variant="contained" color="primary">
+            {initial ? "Update" : "Create"} Member
+          </Button>
+        </Box>
       </Box>
     </Box>
   )

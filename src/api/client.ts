@@ -21,12 +21,22 @@ export const ApiClient = {
         headers,
       },
     )
+
+    if (!response.ok) {
+      throw new Error("Unable to fetch members")
+    }
+
     return response.json()
   },
   async fetchMember(id: string): Promise<Member> {
     const response = await fetch(`${API_URL}/members/${id}`, {
       headers,
     })
+
+    if (!response.ok) {
+      throw new Error("Unable to fetch member")
+    }
+
     return response.json()
   },
   async createMember(data: CreateMemberDTO): Promise<Member> {
@@ -35,6 +45,10 @@ export const ApiClient = {
       headers,
       body: JSON.stringify(data),
     })
+
+    if (!response.ok) {
+      throw new Error("Unable to create member")
+    }
 
     return response.json()
   },
@@ -45,23 +59,35 @@ export const ApiClient = {
       body: JSON.stringify(data),
     })
 
+    if (!response.ok) {
+      throw new Error("Unable to update member")
+    }
+
     return response.json()
   },
   async deleteMember(id: string) {
-    await fetch(`${API_URL}/members/${id}`, {
+    const response = await fetch(`${API_URL}/members/${id}`, {
       method: "DELETE",
       headers,
     })
+
+    if (!response.ok) {
+      throw new Error("Unable to delete member")
+    }
   },
   async uploadMemberPhoto(id: string, file: File) {
     const formData = new FormData()
     formData.append("file", file)
-    await fetch(`${API_URL}/members/${id}/photo`, {
+    const response = await fetch(`${API_URL}/members/${id}/photo`, {
       method: "PUT",
       headers: {
         "X-Api-Key": API_KEY,
       },
       body: formData,
     })
+
+    if (!response.ok) {
+      throw new Error("Unable to upload member photo")
+    }
   },
 }

@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Avatar,
 } from "@mui/material"
 import {
   CreateMemberSchema,
@@ -22,7 +23,7 @@ import { useForm, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ApiClient } from "../api/client"
-import { useState } from "react"
+import React, { useState } from "react"
 import { getFullName } from "../utils/string"
 import { useSnackbar } from "notistack"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -36,7 +37,8 @@ export function MemberForm({ initial }: Props) {
   const client = useQueryClient()
   const { enqueueSnackbar } = useSnackbar()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const { control, handleSubmit, formState, watch } = useForm<
+  const isEdit = !!initial
+  const { control, handleSubmit, formState } = useForm<
     CreateMemberDTO | UpdateMemberDTO
   >({
     mode: "onTouched",
@@ -47,10 +49,8 @@ export function MemberForm({ initial }: Props) {
       sex: initial?.sex ?? "male",
       status: initial?.status ?? "ACTIVE",
     },
-    resolver: zodResolver(initial ? UpdateMemberSchema : CreateMemberSchema),
+    resolver: zodResolver(isEdit ? UpdateMemberSchema : CreateMemberSchema),
   })
-
-  console.log(watch("dateOfBirth"))
 
   const updateMutation = useMutation({
     mutationFn(data: { id: string; member: UpdateMemberDTO }) {
@@ -62,7 +62,11 @@ export function MemberForm({ initial }: Props) {
       enqueueSnackbar("Member updated successfully!", { variant: "success" })
       navigate("/")
     },
-    // onError() {},
+    onError() {
+      enqueueSnackbar("Unable to update member, please try again", {
+        variant: "error",
+      })
+    },
   })
 
   const createMutation = useMutation({
@@ -74,7 +78,11 @@ export function MemberForm({ initial }: Props) {
       enqueueSnackbar("Member created successfully!", { variant: "success" })
       navigate("/")
     },
-    // onError() {},
+    onError() {
+      enqueueSnackbar("Unable to create member, please try again", {
+        variant: "error",
+      })
+    },
   })
 
   const deleteMutation = useMutation({
@@ -86,6 +94,11 @@ export function MemberForm({ initial }: Props) {
       enqueueSnackbar("Member deleted successfully!", { variant: "error" })
       navigate("/")
     },
+    onError() {
+      enqueueSnackbar("Unable to delete member, please try again", {
+        variant: "error",
+      })
+    },
   })
 
   const upsertFunction = handleSubmit((values) => {
@@ -95,6 +108,31 @@ export function MemberForm({ initial }: Props) {
 
     return createMutation.mutate(values as CreateMemberDTO)
   })
+
+  const uploadMemberPhoto = useMutation({
+    mutationFn(data: { memberId: string; file: File }) {
+      return ApiClient.uploadMemberPhoto(data.memberId, data.file)
+    },
+    onSuccess() {
+      client.invalidateQueries({ queryKey: ["member", initial!.id] })
+      enqueueSnackbar("Photo updated successfully!", { variant: "success" })
+    },
+    onError() {
+      enqueueSnackbar(
+        "Unable to upload photo, please check that the size is below 3 MB",
+        { variant: "error" },
+      )
+    },
+  })
+
+  const onUploadPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      uploadMemberPhoto.mutate({
+        file: e.target.files[0],
+        memberId: initial!.id,
+      })
+    }
+  }
 
   const canSave = formState.isDirty && formState.isValid
 
@@ -116,6 +154,24 @@ export function MemberForm({ initial }: Props) {
           <Button onClick={() => navigate("/")}>Back to List</Button>
         </Box>
 
+        {isEdit && (
+          <Stack direction="column" spacing={2} alignItems="center" mb={4}>
+            <Avatar
+              src={initial.photoUrl ?? undefined}
+              sx={{ width: 100, height: 100 }}
+            />
+            <Button component="label">
+              Upload Photo
+              <input
+                hidden
+                type="file"
+                accept="image/png,image/webp,image/jpeg"
+                onChange={onUploadPhoto}
+              />
+            </Button>
+          </Stack>
+        )}
+
         <Box onSubmit={upsertFunction} component="form" minWidth={640}>
           <Stack direction="column" spacing={3}>
             <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -123,14 +179,28 @@ export function MemberForm({ initial }: Props) {
                 control={control}
                 name="firstName"
                 render={({ field }) => {
-                  return <TextField fullWidth {...field} label="First Name" />
+                  return (
+                    <TextField
+                      fullWidth
+                      {...field}
+                      label="First Name"
+                      required
+                    />
+                  )
                 }}
               />
               <Controller
                 control={control}
                 name="lastName"
                 render={({ field }) => {
-                  return <TextField fullWidth {...field} label="Last Name" />
+                  return (
+                    <TextField
+                      fullWidth
+                      {...field}
+                      label="Last Name"
+                      required
+                    />
+                  )
                 }}
               />
             </Stack>
@@ -168,7 +238,7 @@ export function MemberForm({ initial }: Props) {
             />
           </Stack>
           <Box sx={{ mt: 2 }} display="flex" justifyContent="space-between">
-            {!!initial && (
+            {isEdit && (
               <Button
                 onClick={() => setShowDeleteDialog(true)}
                 variant="contained"
@@ -188,7 +258,7 @@ export function MemberForm({ initial }: Props) {
           </Box>
         </Box>
       </Box>
-      {!!initial && (
+      {isEdit && (
         <Dialog
           open={showDeleteDialog}
           onClose={() => setShowDeleteDialog(false)}

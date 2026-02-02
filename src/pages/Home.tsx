@@ -22,13 +22,12 @@ import { useNavigate } from "react-router-dom"
 
 export function Home() {
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
   const navigate = useNavigate()
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["members", page, limit],
+  const { data } = useQuery({
+    queryKey: ["members", page, 10],
     queryFn() {
-      return ApiClient.fetchMembers(page, limit)
+      return ApiClient.fetchMembers(page, 10)
     },
   })
 

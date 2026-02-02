@@ -7,11 +7,7 @@ import { Box, CircularProgress } from "@mui/material"
 export function MemberDetails() {
   const { id } = useParams<{ id: string }>()
 
-  const {
-    data: member,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: member, isLoading } = useQuery({
     queryKey: ["member", id],
     queryFn: () => ApiClient.fetchMember(id!),
   })

@@ -23,7 +23,7 @@ export const ApiClient = {
     )
     return response.json()
   },
-  async fetchMember(id: string) {
+  async fetchMember(id: string): Promise<Member> {
     const response = await fetch(`${API_URL}/members/${id}`, {
       headers,
     })

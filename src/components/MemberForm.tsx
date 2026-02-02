@@ -16,9 +16,10 @@ import { useNavigate } from "react-router-dom"
 
 type Props = {
   initial?: Member
+  isEdit?: boolean
 }
 
-export function MemberForm({ initial }: Props) {
+export function MemberForm({ initial, isEdit }: Props) {
   const navigate = useNavigate()
   const { control } = useForm<CreateMemberDTO | UpdateMemberDTO>({
     defaultValues: {
@@ -42,7 +43,7 @@ export function MemberForm({ initial }: Props) {
     >
       <Box display="flex" justifyContent="space-between" minWidth={640}>
         <Typography variant="h4" color="primary" sx={{ mb: 2 }}>
-          Create Member
+          {isEdit ? "Update" : "Create"} Member
         </Typography>
         <Button onClick={() => navigate("/")}>Back to List</Button>
       </Box>

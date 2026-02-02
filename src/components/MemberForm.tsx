@@ -13,7 +13,7 @@ import {
 } from "../api/types"
 import { useForm, Controller } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ApiClient } from "../api/client"
 
 type Props = {
@@ -22,6 +22,7 @@ type Props = {
 
 export function MemberForm({ initial }: Props) {
   const navigate = useNavigate()
+  const client = useQueryClient()
   const { control, handleSubmit } = useForm<CreateMemberDTO | UpdateMemberDTO>({
     defaultValues: {
       firstName: initial?.firstName ?? "",
@@ -36,16 +37,23 @@ export function MemberForm({ initial }: Props) {
     mutationFn(data: { id: string; member: UpdateMemberDTO }) {
       return ApiClient.updateMember(data.id, data.member)
     },
-    onSuccess() {},
-    onError() {},
+    onSuccess() {
+      client.invalidateQueries({ queryKey: ["member", initial!.id] })
+      client.invalidateQueries({ queryKey: ["members"] })
+      navigate("/")
+    },
+    // onError() {},
   })
 
   const createMutation = useMutation({
     mutationFn(data: CreateMemberDTO) {
       return ApiClient.createMember(data)
     },
-    onSuccess() {},
-    onError() {},
+    onSuccess() {
+      client.invalidateQueries({ queryKey: ["members"] })
+      navigate("/")
+    },
+    // onError() {},
   })
 
   const apiFunction = handleSubmit((values) => {

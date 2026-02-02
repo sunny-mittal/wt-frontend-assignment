@@ -6,6 +6,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import { Home } from "./pages/Home"
 import { CreateMember } from "./pages/CreateMember"
 import { MemberDetails } from "./pages/MemberDetails"
+import { SnackbarProvider } from "notistack"
 
 const client = new QueryClient()
 
@@ -24,19 +25,21 @@ const theme = createTheme({
 function App() {
   return (
     <QueryClientProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <Routes>
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/members/new" element={<CreateMember />} />
-              <Route path="/members/:id" element={<MemberDetails />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </ThemeProvider>
+      <SnackbarProvider anchorOrigin={{ horizontal: "right", vertical: "top" }}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <Routes>
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/members/new" element={<CreateMember />} />
+                <Route path="/members/:id" element={<MemberDetails />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </ThemeProvider>
+      </SnackbarProvider>
     </QueryClientProvider>
   )
 }

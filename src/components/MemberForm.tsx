@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ApiClient } from "../api/client"
 import { useState } from "react"
 import { getFullName } from "../utils/string"
+import { useSnackbar } from "notistack"
 
 type Props = {
   initial?: Member
@@ -30,6 +31,7 @@ type Props = {
 export function MemberForm({ initial }: Props) {
   const navigate = useNavigate()
   const client = useQueryClient()
+  const { enqueueSnackbar } = useSnackbar()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const { control, handleSubmit } = useForm<CreateMemberDTO | UpdateMemberDTO>({
     defaultValues: {
@@ -48,6 +50,7 @@ export function MemberForm({ initial }: Props) {
     onSuccess() {
       client.invalidateQueries({ queryKey: ["member", initial!.id] })
       client.invalidateQueries({ queryKey: ["members"] })
+      enqueueSnackbar("Member updated successfully!", { variant: "success" })
       navigate("/")
     },
     // onError() {},
@@ -59,6 +62,7 @@ export function MemberForm({ initial }: Props) {
     },
     onSuccess() {
       client.invalidateQueries({ queryKey: ["members"] })
+      enqueueSnackbar("Member created successfully!", { variant: "success" })
       navigate("/")
     },
     // onError() {},
@@ -70,6 +74,7 @@ export function MemberForm({ initial }: Props) {
     },
     onSuccess() {
       client.invalidateQueries({ queryKey: ["members"] })
+      enqueueSnackbar("Member deleted successfully!", { variant: "error" })
       navigate("/")
     },
   })

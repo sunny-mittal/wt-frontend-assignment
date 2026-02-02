@@ -12,6 +12,8 @@ import {
   DialogActions,
 } from "@mui/material"
 import {
+  CreateMemberSchema,
+  UpdateMemberSchema,
   type CreateMemberDTO,
   type Member,
   type UpdateMemberDTO,
@@ -23,6 +25,7 @@ import { ApiClient } from "../api/client"
 import { useState } from "react"
 import { getFullName } from "../utils/string"
 import { useSnackbar } from "notistack"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 type Props = {
   initial?: Member
@@ -33,7 +36,10 @@ export function MemberForm({ initial }: Props) {
   const client = useQueryClient()
   const { enqueueSnackbar } = useSnackbar()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const { control, handleSubmit } = useForm<CreateMemberDTO | UpdateMemberDTO>({
+  const { control, handleSubmit, formState, watch } = useForm<
+    CreateMemberDTO | UpdateMemberDTO
+  >({
+    mode: "onTouched",
     defaultValues: {
       firstName: initial?.firstName ?? "",
       lastName: initial?.lastName ?? "",
@@ -41,7 +47,10 @@ export function MemberForm({ initial }: Props) {
       sex: initial?.sex ?? "male",
       status: initial?.status ?? "ACTIVE",
     },
+    resolver: zodResolver(initial ? UpdateMemberSchema : CreateMemberSchema),
   })
+
+  console.log(watch("dateOfBirth"))
 
   const updateMutation = useMutation({
     mutationFn(data: { id: string; member: UpdateMemberDTO }) {
@@ -86,6 +95,8 @@ export function MemberForm({ initial }: Props) {
 
     return createMutation.mutate(values as CreateMemberDTO)
   })
+
+  const canSave = formState.isDirty && formState.isValid
 
   return (
     <>
@@ -166,7 +177,12 @@ export function MemberForm({ initial }: Props) {
                 Delete Member
               </Button>
             )}
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              disabled={!canSave}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
               {initial ? "Update" : "Create"} Member
             </Button>
           </Box>

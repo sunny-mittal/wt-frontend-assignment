@@ -1,9 +1,9 @@
 import { z } from "zod"
 
 export const CreateMemberSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  dateOfBirth: z.string(),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  dateOfBirth: z.string().regex(/\d{4}-\d{2}-\d{2}/),
   sex: z.enum(["male", "female", "other"]),
   status: z.enum(["ACTIVE", "PAUSED"]),
 })
